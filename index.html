@@ -150,7 +150,9 @@ padding: 24px; border-radius:16px;">
 	var instruments = [];
 	instruments[0] = new Tone.PolySynth(9,Tone.AMSynth).toMaster()
 	instruments[1] = new Tone.PolySynth(9,Tone.Synth).toMaster()
-
+	function onLoad(){
+		console.log("READY!");
+	}
 	instruments[2] = new Tone.Sampler({
 		"C4" : "../samples/roland707/TR707_CLAP.wav",
 		"B3" : "../samples/roland707/TR707_CRASH.wav",
@@ -161,6 +163,7 @@ padding: 24px; border-radius:16px;">
 		"D3" : "../samples/roland707/TR707_SNARE 1.wav",
 		"C3" : "../samples/roland707/TR707_TOM_MID.wav"
 	}, {
+			"onload" : onLoad(),
 			"release" : 1,
 			"baseUrl" : "../samples/roland707/"
 		}).toMaster();
