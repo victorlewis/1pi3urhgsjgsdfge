@@ -148,11 +148,13 @@ padding: 24px; border-radius:16px;">
 	let currentInstrument = 0;
 
 	var instruments = [];
-	instruments[0] = new Tone.PolySynth(9,Tone.AMSynth).toMaster()
-	instruments[1] = new Tone.PolySynth(9,Tone.Synth).toMaster()
+	instruments[0] = new Tone.PolySynth(9,Tone.AMSynth).toMaster();
+	instruments[1] = new Tone.PolySynth(9,Tone.Synth).toMaster();
+
 	function onLoad(){
 		console.log("READY!");
 	}
+
 	instruments[2] = new Tone.Sampler({
 		"C4" : "samples/roland707/TR707_CLAP.[mp3|ogg]",
 		"B3" : "samples/roland707/TR707_CRASH.[mp3|ogg]",
@@ -162,11 +164,7 @@ padding: 24px; border-radius:16px;">
 		"E3" : "samples/roland707/TR707_RIMSHOT.[mp3|ogg]",
 		"D3" : "samples/roland707/TR707_SNARE 1.[mp3|ogg]",
 		"C3" : "samples/roland707/TR707_TOM_MID.[mp3|ogg]"
-	}, {
-			"onload" : onLoad(),
-			"release" : 1,
-			"baseUrl" : "samples/roland707/"
-		}).toMaster();
+	}).toMaster();
 
 	let instrument0Button = document.getElementById('instrument0');
 	let instrument1Button = document.getElementById('instrument1');
