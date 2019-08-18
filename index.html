@@ -154,18 +154,18 @@ padding: 24px; border-radius:16px;">
 		console.log("READY!");
 	}
 	instruments[2] = new Tone.Sampler({
-		"C4" : "../samples/roland707/TR707_CLAP.wav",
-		"B3" : "../samples/roland707/TR707_CRASH.wav",
-		"A3" : "../samples/roland707/TR707_HAT_CLOSED.wav",
-		"G3" : "../samples/roland707/TR707_HAT_OPEN.wav",
-		"F3" : "../samples/roland707/TR707_KICK 1.wav",
-		"E3" : "../samples/roland707/TR707_RIMSHOT.wav",
-		"D3" : "../samples/roland707/TR707_SNARE 1.wav",
-		"C3" : "../samples/roland707/TR707_TOM_MID.wav"
+		"C4" : "samples/roland707/TR707_CLAP.wav",
+		"B3" : "samples/roland707/TR707_CRASH.wav",
+		"A3" : "samples/roland707/TR707_HAT_CLOSED.wav",
+		"G3" : "samples/roland707/TR707_HAT_OPEN.wav",
+		"F3" : "samples/roland707/TR707_KICK 1.wav",
+		"E3" : "samples/roland707/TR707_RIMSHOT.wav",
+		"D3" : "samples/roland707/TR707_SNARE 1.wav",
+		"C3" : "samples/roland707/TR707_TOM_MID.wav"
 	}, {
 			"onload" : onLoad(),
 			"release" : 1,
-			"baseUrl" : "../samples/roland707/"
+			"baseUrl" : "samples/roland707/"
 		}).toMaster();
 
 	let instrument0Button = document.getElementById('instrument0');
