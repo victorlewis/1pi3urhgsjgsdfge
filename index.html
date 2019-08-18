@@ -2,35 +2,200 @@
 	<head>
 		<meta charset="UTF-8">
 	</head>
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+
 	<script type="text/javascript" src="tone.js"></script>
-	
+	<!-- load webcomponents bundle, which includes all the necessary polyfills -->
+<script type="text/javascript">
+if (!document.registerElement) {
+	document.writeln(decodeURI('%3Cscript%20src=%22https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.12/webcomponents.min.js%22%20type=%22text/javascript%22%3E%3C/script%3E'));
+}
+</script>
+
+	<script src="xknob.js" type="text/javascript" async></script>
+	<link href="xknob.css" type="text/css" rel="stylesheet">
+
+
+	<style>
+		body {
+		    font-family: 'Roboto';font-size: 22px;
+		}
+		.column {
+		    flex: 1;
+		    display: flex;
+		    flex-direction: column;
+		}
+		.column.highlight{
+			opacity: 0.25;
+		}
+		.row {
+		    flex: 1;
+		    margin: 1px;
+		    background-color: #d9d9d9;
+		    transition: background-color 0s;
+		}
+		.row.filled {
+		    background-color: teal;
+		}
+		#container {
+			width: 100%;
+			height: 100%;
+			display: flex;
+		}
+		.button-round{
+		  background-color: #a4a4a4;
+		  border: none;
+		  color: white;
+		  padding: 16px;
+		  text-align: center;
+		  text-decoration: none;
+		  display: inline-block;
+		  font-size: 16px;
+		  margin: 4px 2px;
+		  border-radius:10%;
+		}
+		.button-round.active{
+			background-color:teal;
+		}
+	</style>
+
 	<!--<button id="activateButton">Activate</button>
 	<hr>-->
-	<button id="toggleButton">Toggle</button>
-	<hr>
+	<body>
+	<div style="margin-bottom:16px;">
 
+	<x-knob id="big" style="text-align: center; display: inline-block; vertical-align: middle; display: inline-block; margin-right:16px;">
+	</x-knob>
+
+		<div style="  vertical-align: middle; display: inline-block; margin-right:5rem;">BPM: <span id="bpm">120</span></div>
+
+	<button class="button-round" id="toggleButton">Play</button>
+
+	</div>
+
+
+
+	<div style="display: block;width: 100%;">
+		<div style="display: inline-block; width: 80vw;height: 40vw;">
+			<div id="container">
+			</div>
+		</div>
+	</div>
 
 
 	<script>
-	var synth = new Tone.Synth().toMaster()
+	var synth = new Tone.PluckSynth().toMaster()
 
-	//pass in an array of events
-	var part = new Tone.Part(function(time, event){
-		//the events will be given to the callback with the time they occur
-		synth.triggerAttackRelease(event.note, event.dur, time)
-	}, [{ time : 0, note : 'C4', dur : '4n'},
-		{ time : {'4n' : 1, '8n' : 1}, note : 'E4', dur : '8n'},
-		{ time : '2n', note : 'G4', dur : '16n'},
-		{ time : {'2n' : 1, '8t' : 1}, note : 'B4', dur : '4n'}])
+	// STATE MACHINE
+	let isPlaying = 0;
 
-	//start the part at the beginning of the Transport's timeline
-	part.start(0)
+	// THE ARRAY OF SOUNDS
+	var sequence = [];
 
-	//loop the part 3 times
-	part.loop = 3
-	part.loopEnd = '1m'
+	// INITIALIZE
+	for (y = 0; y<16; y++){
+		sequence[y] = [];
 
-	//start/stop the transport
-	document.getElementById('toggleButton').addEventListener('click', e => Tone.Transport.toggle())
+		for (x = 0; x<8; x++) {
+			sequence[y][x] = 0;
+		}
+	}
+
+	// CREATE THE INTERFACE
+	const containerDiv = document.getElementById("container");
+
+	for (let y = 0; y<16; y++){
+		var theColumn = document.createElement("div");
+		theColumn.className = "column";
+		containerDiv.appendChild(theColumn);
+
+		for (let i =0; i<8; i++){
+			var theRow = document.createElement("div");
+			theRow.className = "row";
+			theColumn.appendChild(theRow);
+
+			// ADD THE X AND Y
+			theRow.setAttribute("x", i); 
+			theRow.setAttribute("y", y); 
+
+			// ADD THE LISTENER
+			theRow.addEventListener("click", function(){
+				const thisX = this.getAttribute("x");
+				const thisY = this.getAttribute("y");
+
+				if (sequence[thisY][thisX] == 0) {
+					sequence[thisY][thisX] = 1;
+					// SET IT ACTIVE
+					this.className = "row filled";
+				} else {
+					sequence[thisY][thisX] =0;
+					this.className = "row";
+				}
+			});
+		}
+	}
+
+	// 0: C3
+	// 7: C4
+	let scale = ["C4", "B3", "A3", "G3", "F3", "E3", "D3", "C3"];
+
+	// THE SYNTH ENGINE
+	var synth = new Tone.PolySynth(9,Tone.AMSynth).toMaster()
+
+	let i = 0;
+
+	Tone.Transport.scheduleRepeat(loop, '16n');
+	//Tone.Transport.start(0);
+
+	function loop(time){
+		let y = i % 16;
+
+		let yPrev = y;
+		if (yPrev == 0) yPrev = 16;
+		// child nodes are 1-indexed
+		containerDiv.childNodes[yPrev].className = "column";
+		containerDiv.childNodes[y+1].className = "column highlight";
+
+		for (let x = 0; x<8; x++){
+			// HIGHLIGHT THE COLUMN
+
+			if (sequence[y][x] == 1){
+				let note = scale[x];
+				synth.triggerAttackRelease(note, '16n', time);
+			}
+		}
+		i++;
+	}
+
+	// BPM
+	let bpm = 120;
+	document.getElementById('big').addEventListener('input', function(ev) {
+		let rotary = document.getElementById('big').value;
+		console.log(rotary);
+
+		bpm = Math.floor(120 + rotary*120);
+		document.getElementById('bpm').innerHTML = bpm;
+		Tone.Transport.bpm.value = bpm;
+	});
+
+	Tone.Transport.bpm.value = 120;
+
+	document.getElementById('toggleButton').addEventListener('click', function(){
+		isPlaying = !isPlaying;
+
+		if (isPlaying) document.getElementById('toggleButton').className = "button-round active";
+		else document.getElementById('toggleButton').className = "button-round";
+
+		for (let j=0; j<containerDiv.childNodes.length;j++){
+			containerDiv.childNodes[j].className = "column";
+		}
+
+
+
+		Tone.Transport.toggle()
+		i = 0;
+	})
 	</script>
+
+</body>
 </html>
