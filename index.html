@@ -64,7 +64,7 @@ if (!document.registerElement) {
 	<body>
 
 	<div style="width:960px; background-color: #4f4f4f;
-padding: 24px;">
+padding: 24px; border-radius:16px;">
 		<div style="margin-bottom:16px;">
 			<x-knob id="big" style="text-align: center; display: inline-block; vertical-align: middle; display: inline-block; margin-right:16px;">
 			</x-knob>
@@ -73,8 +73,11 @@ padding: 24px;">
 				BPM: <span style="background-color:black; padding:8px 16px; color:green;" id="bpm">120</span>
 			</div>
 
-			<button class="button-round" id="toggleButton">Play</button>
+			<button style="margin-right:48px;" class="button-round" id="toggleButton">Play</button>
 
+			<button class="button-round active" id="instrument0">Synth 1</button>
+			<button class="button-round" id="instrument1">Synth 2</button>
+			<button class="button-round" id="instrument2">Drum</button>
 		</div>
 
 		<div style="display: block;width: 100%;">
@@ -87,8 +90,6 @@ padding: 24px;">
 
 
 	<script>
-	var synth = new Tone.PluckSynth().toMaster()
-
 	// STATE MACHINE
 	let isPlaying = 0;
 
@@ -143,7 +144,52 @@ padding: 24px;">
 	let scale = ["C4", "B3", "A3", "G3", "F3", "E3", "D3", "C3"];
 
 	// THE SYNTH ENGINE
-	var synth = new Tone.PolySynth(9,Tone.AMSynth).toMaster()
+	// INSTRUMENTS:
+	let currentInstrument = 0;
+
+	var instruments = [];
+	instruments[0] = new Tone.PolySynth(9,Tone.AMSynth).toMaster()
+	instruments[1] = new Tone.PolySynth(9,Tone.Synth).toMaster()
+
+	instruments[2] = new Tone.Sampler({
+		"C4" : "../samples/roland707/TR707_CLAP.wav",
+		"B3" : "../samples/roland707/TR707_CRASH.wav",
+		"A3" : "../samples/roland707/TR707_HAT_CLOSED.wav",
+		"G3" : "../samples/roland707/TR707_HAT_OPEN.wav",
+		"F3" : "../samples/roland707/TR707_KICK 1.wav",
+		"E3" : "../samples/roland707/TR707_RIMSHOT.wav",
+		"D3" : "../samples/roland707/TR707_SNARE 1.wav",
+		"C3" : "../samples/roland707/TR707_TOM_MID.wav"
+	}, {
+			"release" : 1,
+			"baseUrl" : "../samples/roland707/"
+		}).toMaster();
+
+	let instrument0Button = document.getElementById('instrument0');
+	let instrument1Button = document.getElementById('instrument1');
+	let instrument2Button = document.getElementById('instrument2');
+
+	instrument0Button.addEventListener('click', function(){
+		instrument0Button.className = "button-round active";
+		instrument1Button.className = "button-round";
+		instrument2Button.className = "button-round";
+		currentInstrument = 0;
+	});
+
+	instrument1Button.addEventListener('click', function(){
+		instrument0Button.className = "button-round";
+		instrument1Button.className = "button-round active";
+		instrument2Button.className = "button-round";
+		currentInstrument = 1;
+	});
+
+	instrument2Button.addEventListener('click', function(){
+		instrument0Button.className = "button-round";
+		instrument1Button.className = "button-round";
+		instrument2Button.className = "button-round active";
+		currentInstrument = 2;
+	});
+
 
 	let i = 0;
 
@@ -164,7 +210,7 @@ padding: 24px;">
 
 			if (sequence[y][x] == 1){
 				let note = scale[x];
-				synth.triggerAttackRelease(note, '16n', time);
+				instruments[currentInstrument].triggerAttackRelease(note, '16n', time);
 			}
 		}
 		i++;
