@@ -25,13 +25,12 @@ if (!document.registerElement) {
 		    display: flex;
 		    flex-direction: column;
 		}
-		.column.highlight{
-			opacity: 0.25;
+		.column.highlight {
 		}
 		.row {
 		    flex: 1;
-		    margin: 1px;
-		    background-color: #d9d9d9;
+		    margin: 4px;
+		    background-color: #ddd;
 		    transition: background-color 0s;
 		}
 		.row.filled {
@@ -62,22 +61,25 @@ if (!document.registerElement) {
 	<!--<button id="activateButton">Activate</button>
 	<hr>-->
 	<body>
-	<div style="margin-bottom:16px;">
 
-	<x-knob id="big" style="text-align: center; display: inline-block; vertical-align: middle; display: inline-block; margin-right:16px;">
-	</x-knob>
+	<div style="width:960px; background-color: #4f4f4f;
+padding: 24px;">
+		<div style="margin-bottom:16px;">
+			<x-knob id="big" style="text-align: center; display: inline-block; vertical-align: middle; display: inline-block; margin-right:16px;">
+			</x-knob>
 
-		<div style="  vertical-align: middle; display: inline-block; margin-right:5rem;">BPM: <span id="bpm">120</span></div>
+			<div style="  vertical-align: middle; display: inline-block; margin-right:5rem;">
+				BPM: <span style="background-color:black; padding:8px 16px; color:green;" id="bpm">120</span>
+			</div>
 
-	<button class="button-round" id="toggleButton">Play</button>
+			<button class="button-round" id="toggleButton">Play</button>
 
-	</div>
+		</div>
 
-
-
-	<div style="display: block;width: 100%;">
-		<div style="display: inline-block; width: 80vw;height: 40vw;">
-			<div id="container">
+		<div style="display: block;width: 100%;">
+			<div style="display: inline-block; width:960px;height:480px;">
+				<div id="container">
+				</div>
 			</div>
 		</div>
 	</div>
